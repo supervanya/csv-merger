@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com🏢office">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="x-apple-disable-message-reformatting">
+    <title></title>
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+</head>
+    <style>
+        table, td, div, h1, p {font-family: Arial, sans-serif;}
+    </style>
+    <script src="https://unpkg.com/papaparse@^5.3.1" ></script>
+<body style="margin:0;padding:0;">
+    <table role="presentation" style="width:100%;border-collapse:collapse;border:1px;border-spacing:0;background-color:#007dc5;">
+      <tr>
+        <td align="center" style="padding:20px;color:#FFFFFF;">
+        <span style="font-size:175%;">All Covered</span><br>
+        IT SERVICES FROM KONICA MINOLTA
+          <table role="presentation" style="width:602px;border-collapse:collapse;border:3px solid #cccccc;border-spacing:0;text-align:left;background-color:#FFFFFF;color:#000000;">
+            <tr>
+              <div>
+                <form id="mergeForm">
+                    <tr>
+                      <td>
+                        <fieldset>
+                          <legend>File 1</legend>
+                          <input type="file" id="vaultCSV" accept=".csv" />
+                        </fieldset>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <fieldset>
+                          <legend>File 2</legend>
+                          <input type="file" id="gmcCSV" accept=".csv" />
+                        </fieldset>
+                      </td>
+                    </tr>
+                  <p><input type="submit" value="Submit" /></p>
+                </form>
+              </div>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  <script>
+    const mergeForm = document.getElementById("mergeForm");
+    const vaultCSV = document.getElementById("vaultCSV");
+    const gmcCSV = document.getElementById("gmcCSV");
+    console.log(Papa)
+  
+  function csvToArray(str, delimiter =","){
+    const headers = str.slice(0, str.indexOf("\n")).split(delimiter);
+    const rows = str.slice(str.indexOf("\n")+1).split("\r\n");
+
+    const arr = rows.map(function (row) {
+    const values = row.split(delimiter);
+    const el = headers.reduce(function (object, header, index) {
+      object[header] = values[index]
+        return object;
+    },{});
+    return el;
+    });
+
+  return arr;
+  }
+
+  mergeForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const vaultInput = vaultCSV.files[0];
+    const gmcInput = gmcCSV.files[0];
+    const vaultReader = new FileReader();
+    const gmcReader = new FileReader();
+
+    vaultReader.onload = function (e) {
+      const vaultText = e.target.result;
+      const vaultData = csvToArray(vaultText);
+      console.log(vaultData);
+    };
+    gmcReader.onload = function (e) {
+      const gmcText = e.target.result;
+      const gmcData = csvToArray(gmcText);
+      console.log(gmcData);
+    };
+  vaultReader.readAsText(vaultInput);
+  gmcReader.readAsText(gmcInput);
+  });
+  </script>
+</body>
+</html>
