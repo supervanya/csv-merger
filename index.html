@@ -2,7 +2,7 @@
 <html
   lang="en"
   xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:o="urn:schemas-microsoft-com🏢office"
+  xmlns:o="urn:schemas-microsoft-com:office:office"
 >
   <head>
     <meta charset="UTF-8" />
@@ -28,8 +28,6 @@
       font-family: Arial, sans-serif;
     }
   </style>
-  <script src="https://unpkg.com/papaparse@^5.3.1"></script>
-
   <body style="margin: 0; padding: 0">
     <table
       role="presentation"
@@ -44,7 +42,9 @@
       <tr>
         <td align="center" style="padding: 20px; color: #ffffff">
           <span style="font-size: 175%">All Covered</span><br />
-          IT SERVICES FROM KONICA MINOLTA
+          <span style="font-size: 75%">IT SERVICES FROM KONICA MINOLTA</span
+          ><br />
+          <h3>File Merger With Asset Check</h3>
           <table
             role="presentation"
             style="
@@ -59,31 +59,43 @@
           >
             <tr>
               <div>
+                <form id="SaveAS">
+                  <tr>
+                    <td>
+                      <fieldset>
+                        <legend>Insert a name for the merged file</legend>
+                        <input type="text" id="mergedFileName" required />
+                      </fieldset>
+                    </td>
+                  </tr>
+                </form>
                 <form id="mergeForm">
                   <tr>
                     <td>
                       <fieldset>
-                        <legend>vaultCSV</legend>
-                        <input type="file" id="vaultCSV" accept=".csv" />
+                        <legend>Vault Export</legend>
+                        <input
+                          type="file"
+                          id="vaultCSV"
+                          required
+                          accept=".csv"
+                        />
                       </fieldset>
                     </td>
                   </tr>
                   <tr>
                     <td>
                       <fieldset>
-                        <legend>gmcCSV</legend>
-                        <input type="file" id="gmcCSV" accept=".csv" />
+                        <legend>GMC Export</legend>
+                        <input type="file" id="gmcCSV" required accept=".csv" />
                       </fieldset>
                     </td>
                   </tr>
-                  <p>
-                    <input
-                      id="submit"
-                      type="submit"
-                      value="Submit"
-                      disabled="true"
-                    />
-                  </p>
+                  <tr>
+                    <td>
+                      <p><input type="submit" value="Submit" /></p>
+                    </td>
+                  </tr>
                 </form>
               </div>
             </tr>
@@ -91,45 +103,62 @@
         </td>
       </tr>
     </table>
+
     <script>
-      const csvFiles = {};
       const mergeForm = document.getElementById("mergeForm");
-      const vaultCSVinput = document.getElementById("vaultCSV");
-      const gmcCSVinput = document.getElementById("gmcCSV");
+      const vaultCSV = document.getElementById("vaultCSV");
+      const gmcCSV = document.getElementById("gmcCSV");
+      const mergedFileName = document.getElementById("mergedFileName");
+      var vaultData = "";
+      var gmcData = "";
 
-      function enableSubmitButton() {
-        const { vaultCSV, gmcCSV } = csvFiles;
-        if (vaultCSV && gmcCSV) {
-          const submitButton = document.getElementById("submit");
-          submitButton.disabled = false;
-        } else {
-          console.log("Need both files to be present");
-        }
+      mergedFileName.setAttribute("placeholder", "Input merged file name");
+
+      function csvToArray(str, delimiter = ",") {
+        const headers = str.slice(0, str.indexOf("\n")).split(delimiter);
+        const rows = str.slice(str.indexOf("\n") + 1).split("\r\n");
+
+        const arr = rows.map(function (row) {
+          const values = row.split(delimiter);
+          const el = headers.reduce(function (object, header, index) {
+            object[header] = values[index];
+            return object;
+          }, {});
+          return el;
+        });
+
+        return arr;
       }
 
-      function handleCsvParsing(evt) {
-        const file = evt.target.files[0];
-        const fieldId = evt.target.id;
-        if (file) {
-          const fileReader = new FileReader();
-          fileReader.onload = (evt) => {
-            csvString = evt.target.result;
-            csvData = Papa.parse(csvString, { header: true });
-            csvFiles[fieldId] = csvData;
-            enableSubmitButton();
-          };
-          fileReader.readAsText(file);
-        }
-      }
-
-      vaultCSVinput.addEventListener("change", handleCsvParsing);
-      gmcCSVinput.addEventListener("change", handleCsvParsing);
       mergeForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        const { vaultCSV, gmcCSV } = csvFiles;
-        // you can do whatever you want with these files here
-        console.log(csvFiles);
+        const vaultInput = vaultCSV.files[0];
+        const gmcInput = gmcCSV.files[0];
+        const vaultReader = new FileReader();
+        const gmcReader = new FileReader();
+
+        vaultReader.onload = function (e) {
+          const vaultText = e.target.result;
+          vaultData = csvToArray(vaultText);
+          console.log(vaultData);
+        };
+
+        gmcReader.onload = function (e) {
+          const gmcText = e.target.result;
+          gmcData = csvToArray(gmcText);
+          console.log(gmcData);
+        };
+        vaultReader.readAsText(vaultInput);
+        gmcReader.readAsText(gmcInput);
       });
+
+      function mergeFiles(vaultData, gmcData) {
+        return Object.keys(vaultData).map((item, i) => {
+          if (vaultData.serial_number === gmcData[i].serialNumber) {
+            return Object.assign({}, item, gmcData[i]);
+          }
+        });
+      }
     </script>
   </body>
 </html>
