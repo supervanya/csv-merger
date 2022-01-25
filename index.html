@@ -1,110 +1,135 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com🏢office">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="x-apple-disable-message-reformatting">
+<html
+  lang="en"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:o="urn:schemas-microsoft-com🏢office"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="x-apple-disable-message-reformatting" />
     <title></title>
     <!--[if mso]>
       <noscript>
-         <xml>
-            <o:OfficeDocumentSettings>
-               <o:PixelsPerInch>96</o:PixelsPerInch>
-            </o:OfficeDocumentSettings>
-         </xml>
+        <xml>
+          <o:OfficeDocumentSettings>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+          </o:OfficeDocumentSettings>
+        </xml>
       </noscript>
-      <![endif]-->
-</head>
-<style>
+    <![endif]-->
+  </head>
+  <style>
     table,
     td,
     div,
     h1,
     p {
-        font-family: Arial, sans-serif;
+      font-family: Arial, sans-serif;
     }
-</style>
-<script src="https://unpkg.com/papaparse@^5.3.1"></script>
+  </style>
+  <script src="https://unpkg.com/papaparse@^5.3.1"></script>
 
-<body style="margin:0;padding:0;">
-    <table role="presentation"
-        style="width:100%;border-collapse:collapse;border:1px;border-spacing:0;background-color:#007dc5;">
-        <tr>
-            <td align="center" style="padding:20px;color:#FFFFFF;">
-                <span style="font-size:175%;">All Covered</span><br>
-                IT SERVICES FROM KONICA MINOLTA
-                <table role="presentation"
-                    style="width:602px;border-collapse:collapse;border:3px solid #cccccc;border-spacing:0;text-align:left;background-color:#FFFFFF;color:#000000;">
-                    <tr>
-                        <div>
-                            <form id="mergeForm">
-                    <tr>
-                        <td>
-                            <fieldset>
-                                <legend>vaultCSV</legend>
-                                <input type="file" id="vaultCSV" accept=".csv" />
-                            </fieldset>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <fieldset>
-                                <legend>gmcCSV</legend>
-                                <input type="file" id="gmcCSV" accept=".csv" />
-                            </fieldset>
-                        </td>
-                    </tr>
-                    <p>
-                        <input id="submit" type="submit" value="Submit" disabled="true" />
-                    </p>
-                    </form>
-                    </div>
-        </tr>
-    </table>
-    </td>
-    </tr>
+  <body style="margin: 0; padding: 0">
+    <table
+      role="presentation"
+      style="
+        width: 100%;
+        border-collapse: collapse;
+        border: 1px;
+        border-spacing: 0;
+        background-color: #007dc5;
+      "
+    >
+      <tr>
+        <td align="center" style="padding: 20px; color: #ffffff">
+          <span style="font-size: 175%">All Covered</span><br />
+          IT SERVICES FROM KONICA MINOLTA
+          <table
+            role="presentation"
+            style="
+              width: 602px;
+              border-collapse: collapse;
+              border: 3px solid #cccccc;
+              border-spacing: 0;
+              text-align: left;
+              background-color: #ffffff;
+              color: #000000;
+            "
+          >
+            <tr>
+              <div>
+                <form id="mergeForm">
+                  <tr>
+                    <td>
+                      <fieldset>
+                        <legend>vaultCSV</legend>
+                        <input type="file" id="vaultCSV" accept=".csv" />
+                      </fieldset>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <fieldset>
+                        <legend>gmcCSV</legend>
+                        <input type="file" id="gmcCSV" accept=".csv" />
+                      </fieldset>
+                    </td>
+                  </tr>
+                  <p>
+                    <input
+                      id="submit"
+                      type="submit"
+                      value="Submit"
+                      disabled="true"
+                    />
+                  </p>
+                </form>
+              </div>
+            </tr>
+          </table>
+        </td>
+      </tr>
     </table>
     <script>
-        const csvFiles = {};
-        const mergeForm = document.getElementById("mergeForm");
-        const vaultCSVinput = document.getElementById("vaultCSV");
-        const gmcCSVinput = document.getElementById("gmcCSV");
+      const csvFiles = {};
+      const mergeForm = document.getElementById("mergeForm");
+      const vaultCSVinput = document.getElementById("vaultCSV");
+      const gmcCSVinput = document.getElementById("gmcCSV");
 
-        function enableSubmitButton() {
-            const { vaultCSV, gmcCSV } = csvFiles;
-            if (vaultCSV && gmcCSV) {
-                const submitButton = document.getElementById('submit')
-                submitButton.disabled = false;
-            } else {
-                console.log('Need both files to be present')
-            }
+      function enableSubmitButton() {
+        const { vaultCSV, gmcCSV } = csvFiles;
+        if (vaultCSV && gmcCSV) {
+          const submitButton = document.getElementById("submit");
+          submitButton.disabled = false;
+        } else {
+          console.log("Need both files to be present");
         }
+      }
 
-        function handleCsvParsing(evt) {
-            const file = evt.target.files[0];
-            const fieldId = evt.target.id;
-            if (file) {
-                const fileReader = new FileReader();
-                fileReader.onload = (evt) => {
-                    csvString = evt.target.result;
-                    csvData = Papa.parse(csvString, { header: true });
-                    csvFiles[fieldId] = csvData;
-                    enableSubmitButton();
-                };
-                fileReader.readAsText(file);
-            }
+      function handleCsvParsing(evt) {
+        const file = evt.target.files[0];
+        const fieldId = evt.target.id;
+        if (file) {
+          const fileReader = new FileReader();
+          fileReader.onload = (evt) => {
+            csvString = evt.target.result;
+            csvData = Papa.parse(csvString, { header: true });
+            csvFiles[fieldId] = csvData;
+            enableSubmitButton();
+          };
+          fileReader.readAsText(file);
         }
+      }
 
-        vaultCSVinput.addEventListener('change', handleCsvParsing)
-        gmcCSVinput.addEventListener('change', handleCsvParsing)
-        mergeForm.addEventListener("submit", function (e) {
-            e.preventDefault();
-            const { vaultCSV, gmcCSV } = csvFiles;
-            // you can do whatever you want with these files here
-            console.log(csvFiles)
-        });
+      vaultCSVinput.addEventListener("change", handleCsvParsing);
+      gmcCSVinput.addEventListener("change", handleCsvParsing);
+      mergeForm.addEventListener("submit", function (e) {
+        e.preventDefault();
+        const { vaultCSV, gmcCSV } = csvFiles;
+        // you can do whatever you want with these files here
+        console.log(csvFiles);
+      });
     </script>
-</body>
-
+  </body>
 </html>
