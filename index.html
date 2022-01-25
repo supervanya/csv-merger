@@ -1,23 +1,10 @@
 <!DOCTYPE html>
-<html
-  lang="en"
-  xmlns="http://www.w3.org/1999/xhtml"
-  xmlns:o="urn:schemas-microsoft-com🏢office"
->
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <meta name="x-apple-disable-message-reformatting" />
-    <title></title>
-    <!--[if mso]>
-      <noscript>
-        <xml>
-          <o:OfficeDocumentSettings>
-            <o:PixelsPerInch>96</o:PixelsPerInch>
-          </o:OfficeDocumentSettings>
-        </xml>
-      </noscript>
-    <![endif]-->
+    <title>CSV File Merger</title>
   </head>
   <style>
     table,
@@ -44,7 +31,9 @@
       <tr>
         <td align="center" style="padding: 20px; color: #ffffff">
           <span style="font-size: 175%">All Covered</span><br />
-          IT SERVICES FROM KONICA MINOLTA
+          <span style="font-size: 75%">IT SERVICES FROM KONICA MINOLTA</span
+          ><br />
+          <h3>File Merger With Asset Check</h3>
           <table
             role="presentation"
             style="
@@ -63,16 +52,34 @@
                   <tr>
                     <td>
                       <fieldset>
-                        <legend>vaultCSV</legend>
-                        <input type="file" id="vaultCSV" accept=".csv" />
+                        <legend>Output file name</legend>
+                        <input
+                          placeholder="Enter merged csv name"
+                          type="text"
+                          id="mergedFileName"
+                          required
+                        />
                       </fieldset>
                     </td>
                   </tr>
                   <tr>
                     <td>
                       <fieldset>
-                        <legend>gmcCSV</legend>
-                        <input type="file" id="gmcCSV" accept=".csv" />
+                        <legend>Vault Export CSV</legend>
+                        <input
+                          type="file"
+                          id="vaultCSV"
+                          accept=".csv"
+                          required
+                        />
+                      </fieldset>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <fieldset>
+                        <legend>GMC Export CSV</legend>
+                        <input type="file" id="gmcCSV" accept=".csv" required />
                       </fieldset>
                     </td>
                   </tr>
@@ -92,13 +99,14 @@
       </tr>
     </table>
     <script>
-      const csvFiles = {};
+      const csvData = {};
       const mergeForm = document.getElementById("mergeForm");
       const vaultCSVinput = document.getElementById("vaultCSV");
       const gmcCSVinput = document.getElementById("gmcCSV");
+      const mergedFileName = document.getElementById("mergedFileName");
 
       function enableSubmitButton() {
-        const { vaultCSV, gmcCSV } = csvFiles;
+        const { vaultCSV, gmcCSV } = csvData;
         if (vaultCSV && gmcCSV) {
           const submitButton = document.getElementById("submit");
           submitButton.disabled = false;
@@ -115,20 +123,33 @@
           fileReader.onload = (evt) => {
             csvString = evt.target.result;
             csvData = Papa.parse(csvString, { header: true });
-            csvFiles[fieldId] = csvData;
+            csvData[fieldId] = csvData;
             enableSubmitButton();
           };
           fileReader.readAsText(file);
         }
       }
 
+      function mergeFiles(vaultData, gmcData) {
+        return Object.keys(vaultData).map((item, i) => {
+          if (vaultData.serial_number === gmcData[i].serialNumber) {
+            return Object.assign({}, item, gmcData[i]);
+          }
+        });
+      }
+
       vaultCSVinput.addEventListener("change", handleCsvParsing);
       gmcCSVinput.addEventListener("change", handleCsvParsing);
       mergeForm.addEventListener("submit", function (e) {
         e.preventDefault();
-        const { vaultCSV, gmcCSV } = csvFiles;
+        const { vaultCSV, gmcCSV } = csvData;
+
         // you can do whatever you want with these files here
-        console.log(csvFiles);
+        console.log(csvData);
+        const result = mergeFiles(vaultCSV, gmcCSV);
+        console.log(result);
+        const csv = Papa.unparse(result);
+        console.log(csv);
       });
     </script>
   </body>
