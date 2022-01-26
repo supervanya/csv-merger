@@ -35,6 +35,7 @@ function handleCsvParsing(evt) {
 }
 
 // took this one here: https://ourcodeworld.com/articles/read/189/how-to-create-a-file-and-generate-a-download-with-javascript-in-the-browser-without-a-server
+// TODO(supervanya): get one from npm instead of manual implementation
 function download(filename, text) {
   var element = document.createElement("a");
   element.setAttribute(
