@@ -16,6 +16,7 @@
     }
   </style>
   <script src="https://unpkg.com/papaparse@^5.3.1"></script>
+  <script src="js/mainScript.js" type="module" defer></script>
 
   <body style="margin: 0; padding: 0">
     <table
@@ -55,8 +56,8 @@
                         <legend>Output file name</legend>
                         <input
                           placeholder="Enter merged csv name"
-                          type="text"
                           id="mergedFileName"
+                          type="text"
                           required
                         />
                       </fieldset>
@@ -98,59 +99,5 @@
         </td>
       </tr>
     </table>
-    <script>
-      const csvData = {};
-      const mergeForm = document.getElementById("mergeForm");
-      const vaultCSVinput = document.getElementById("vaultCSV");
-      const gmcCSVinput = document.getElementById("gmcCSV");
-      const mergedFileName = document.getElementById("mergedFileName");
-
-      function enableSubmitButton() {
-        const { vaultCSV, gmcCSV } = csvData;
-        if (vaultCSV && gmcCSV) {
-          const submitButton = document.getElementById("submit");
-          submitButton.disabled = false;
-        } else {
-          console.log("Need both files to be present");
-        }
-      }
-
-      function handleCsvParsing(evt) {
-        const file = evt.target.files[0];
-        const fieldId = evt.target.id;
-        if (file) {
-          const fileReader = new FileReader();
-          fileReader.onload = (evt) => {
-            csvString = evt.target.result;
-            csvData = Papa.parse(csvString, { header: true });
-            csvData[fieldId] = csvData;
-            enableSubmitButton();
-          };
-          fileReader.readAsText(file);
-        }
-      }
-
-      function mergeFiles(vaultData, gmcData) {
-        return Object.keys(vaultData).map((item, i) => {
-          if (vaultData.serial_number === gmcData[i].serialNumber) {
-            return Object.assign({}, item, gmcData[i]);
-          }
-        });
-      }
-
-      vaultCSVinput.addEventListener("change", handleCsvParsing);
-      gmcCSVinput.addEventListener("change", handleCsvParsing);
-      mergeForm.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const { vaultCSV, gmcCSV } = csvData;
-
-        // you can do whatever you want with these files here
-        console.log(csvData);
-        const result = mergeFiles(vaultCSV, gmcCSV);
-        console.log(result);
-        const csv = Papa.unparse(result);
-        console.log(csv);
-      });
-    </script>
   </body>
 </html>
